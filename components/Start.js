@@ -1,6 +1,6 @@
-import { View, StyleSheet, Text, TextInput, ImageBackground, TouchableOpacity } from "react-native"
-import Chat from "./Chat"
+import { View, StyleSheet, Text, TextInput, ImageBackground, TouchableOpacity, KeyboardAvoidingView } from "react-native"
 import { useState } from "react"
+
 
 const image = { uri: 'https://i.pinimg.com/564x/e6/27/ac/e627ac9dbda722a8676142a86e78d425.jpg' }
 
@@ -9,10 +9,14 @@ const Start = ({ navigation }) => {
     const [background, setBackground] = useState('')
 
     return (
+        // used imageBackground insted of View
         <ImageBackground source={image} resizeMode="cover" style={styles.container}>
+
+            {/*added extra View because its usefull to center title without margins */}
             <View style={styles.titleView}>
-                <Text style={styles.appTitle}>App Title</Text>
+                <Text style={styles.appTitle}>Chats</Text>
             </View>
+
             <View style={styles.mainView}>
                 <TextInput style={styles.textInput} value={name} onChangeText={setName} placeholder='Type your username here' />
 
@@ -43,10 +47,12 @@ const Start = ({ navigation }) => {
              
                 <TouchableOpacity
                     style={styles.buttonStart}
+                    // navigation allows me to transfer props to Chat page
                     onPress={() => navigation.navigate('Chat', { name: name, background: background })}>
                     <Text style={styles.textButton}>Start Chatting</Text>
                 </TouchableOpacity>
             </View>
+            {Platform.OS === 'ios' ? <KeyboardAvoidingView behavior = "padding" /> : null}
         </ImageBackground>
     )
 }
