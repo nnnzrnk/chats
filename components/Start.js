@@ -1,5 +1,6 @@
-import { View, StyleSheet, Text, TextInput, ImageBackground, TouchableOpacity, KeyboardAvoidingView } from "react-native"
+import { View, StyleSheet, Text, TextInput, ImageBackground, TouchableOpacity, KeyboardAvoidingView, Alert} from "react-native"
 import { useState } from "react"
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 
 const image = { uri: 'https://i.pinimg.com/564x/e6/27/ac/e627ac9dbda722a8676142a86e78d425.jpg' }
@@ -7,6 +8,20 @@ const image = { uri: 'https://i.pinimg.com/564x/e6/27/ac/e627ac9dbda722a8676142a
 const Start = ({ navigation }) => {
     const [name, setName] = useState('')
     const [background, setBackground] = useState('')
+    // initialized the Firebase authentication handler
+    const auth = getAuth()
+
+    // once the user is signed in, the app navigates to the Chat screen while passing result.user.uid (which is assigned to the route parameter userID)
+    const signInUser = () => {
+        signInAnonymously(auth)
+            .then(result => {
+                navigation.navigate('Chat', { name: name, background: background, userID: result.user.uid })
+                Alert.alert('Signed in Successfully!')
+            })
+            .catch((error) => {
+                Alert.alert('Unable to sign in, try later again.')
+            })
+    }
 
     return (
         // used imageBackground insted of View
@@ -23,7 +38,7 @@ const Start = ({ navigation }) => {
                 {/* View with text and colors container  */}
                 <View>
                     <Text style={styles.chooseText}>Choose Background Color</Text>
-                {/* only colors container     */}
+                    {/* only colors container     */}
                     <View style={styles.colorsContainer}>
                         <TouchableOpacity
                             style={[styles.selectStyle, styles.selectColor1]}
@@ -44,15 +59,14 @@ const Start = ({ navigation }) => {
                     </View>
                 </View>
 
-             
+
                 <TouchableOpacity
                     style={styles.buttonStart}
-                    // navigation allows me to transfer props to Chat page
-                    onPress={() => navigation.navigate('Chat', { name: name, background: background })}>
+                    onPress={signInUser}>
                     <Text style={styles.textButton}>Start Chatting</Text>
                 </TouchableOpacity>
             </View>
-            {Platform.OS === 'ios' ? <KeyboardAvoidingView behavior = "padding" /> : null}
+            {Platform.OS === 'ios' ? <KeyboardAvoidingView behavior="padding" /> : null}
         </ImageBackground>
     )
 }
