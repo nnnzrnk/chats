@@ -1,17 +1,19 @@
-import {Alert, StyleSheet} from "react-native";
-import { useState } from "react";
+import { Alert, StyleSheet } from "react-native";
 import Start from "./components/Start";
 import Chat from "./components/Chat";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useEffect } from "react";
+import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
 
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const [text, setText] = useState("");
+  //state that represents the network connectivity status
+  const connectionStatus = useNetInfo()
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
@@ -28,12 +30,22 @@ const App = () => {
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
 
+   //will display an alert popup if connection is lost
+   useEffect(() => {
+    if (connectionStatus.isConnected === false){
+      Alert.alert("Connection lost!")
+      disableNetwork(db)
+    } else if (connectionStatus.isConnected === true) {
+      enableNetwork(db)
+    }
+  }, [connectionStatus.isConnected]) // the useEffect code will be re-executed (if you lose connection while using the app, you should see a “Connection lost!” alert)
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Start">
         <Stack.Screen name="Start" component={Start} />
         <Stack.Screen name="Chat" >
-        {props => <Chat db={db} {...props} />}
+          {props => <Chat  isConnected={connectionStatus.isConnected} db={db} {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
