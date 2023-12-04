@@ -3,6 +3,8 @@ import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
 import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
 import { collection, query, addDoc, onSnapshot, orderBy } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomActions from "./CustomActions";
+import MapView from "react-native-maps";
 
 const Chat = ({ route, navigation, db, isConnected }) => {
   const { name } = route.params
@@ -35,13 +37,13 @@ const Chat = ({ route, navigation, db, isConnected }) => {
       console.log(error.message)
     }
   }
-//to get messages from storage
+  //to get messages from storage
   const loadCachedMessages = async () => {
     const cachedMessages = await AsyncStorage.getItem('messages') || []
     setMessages(JSON.parse(cachedMessages))
   }
 
-//to hide input field when user offline
+  //to hide input field when user offline
   const renderInputToolBar = (props) => {
     if (isConnected) return <InputToolbar {...props} />
     else return null
@@ -50,19 +52,22 @@ const Chat = ({ route, navigation, db, isConnected }) => {
   let unsubMessages
 
   useEffect(() => {
+    navigation.setOptions({ title: name });
 
     if (isConnected === true) {
-      
-       // unregister current onSnapshot() listener to avoid registering multiple listeners when useEffect code is re-executed
+
+      // unregister current onSnapshot() listener to avoid registering multiple listeners when useEffect code is re-executed
       if (unsubMessages) unsubMessages()
       unsubMessages = null
 
-      navigation.setOptions({ title: name });
       const q = query(collection(db, "messages"), orderBy("createdAt", "desc"))
       unsubMessages = onSnapshot(q, (documentsSnapshot) => {
         let newMessages = []
         documentsSnapshot.forEach(doc => {
-          newMessages.push({ id: doc.id, ...doc.data(), createdAt: new Date(doc.data().createdAt.toMillis()) })
+          newMessages.push({
+            id: doc.id, ...doc.data(),
+            createdAt: new Date(doc.data().createdAt.toMillis())
+          })
         })
         cacheMessages(newMessages)
         setMessages(newMessages)
@@ -73,6 +78,32 @@ const Chat = ({ route, navigation, db, isConnected }) => {
       if (unsubMessages) unsubMessages()
     }
   }, [])
+
+  const renderCustomActions = (props) => {
+    return <CustomActions {...props} />
+  }
+
+  const renderCustomView = (props) => {
+    const { currentMessage} = props;
+    if (currentMessage.location) {
+      return (
+          <MapView
+            style={{
+              width: 150,
+              height: 100,
+              borderRadius: 13,
+              margin: 3}}
+            region={{
+              latitude: currentMessage.location.latitude,
+              longitude: currentMessage.location.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
+      );
+    }
+    return null;
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
@@ -85,6 +116,8 @@ const Chat = ({ route, navigation, db, isConnected }) => {
           _id: userID,
           name: name
         }}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
       />
       {/* so that the keyboard does not overlap the input  */}
       {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
