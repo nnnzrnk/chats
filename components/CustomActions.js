@@ -1,14 +1,23 @@
 import { TouchableOpacity, StyleSheet, View, Alert, Text } from "react-native"
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-import * as MediaLibrary from 'expo-media-library'
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
-const CustomActions = ({ wrapperStyle, iconTextStyle, onSend }) => {
+const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, userID }) => {
     const actionSheet = useActionSheet()
-    const [image, setImage] = useState(null)
+
+    const uploadAndSendImage = async (imageURI) => {
+        const uniqueRefString = generateReferene(imageURI)
+        const response = await fetch(imageURI);
+        const blob = await response.blob();
+        const newUploadRef = ref(storage, uniqueRefString)
+        uploadBytes(newUploadRef, blob).then(async (snapshot) => {
+            const imageURL = await getDownloadURL(snapshot.ref)
+            onSend({ image: imageURL })
+        })
+    }
 
 
     const pickImage = async () => {
@@ -17,47 +26,44 @@ const CustomActions = ({ wrapperStyle, iconTextStyle, onSend }) => {
         if (permissions?.granted) {
             let result = await ImagePicker.launchImageLibraryAsync()
 
-            if (!result.canceled) {
-                console.log('uploading and uploading the image occurs here')
-            } else Alert.alert(`Permissions haven't been granted`)
+            if (!result.canceled) await uploadAndSendImage(result.assets[0].uri)
+            else Alert.alert(`Permissions haven't been granted`)
         }
     }
 
-    // The code asks permission from 
-    // the media library (which includes both reading and writing to it).
-    // If granted, the code will call MediaLibrary.saveToLibraryAsync() 
-    //while passing the URI of the photo asset to it.
+    //to produce a string that can be used as a unique reference for the image to be uploaded
+    const generateReferene = (uri) => {
+        const timeStamp = (new Date()).getTime()
+        const imageName = uri.split('/')[uri.split('/').length - 1]
+        return `${userID}-${timeStamp}-${imageName}`
+    }
+
+
     const takePhoto = async () => {
         let permissions = await ImagePicker.requestCameraPermissionsAsync()
 
         if (permissions?.granted) {
             let result = await ImagePicker.launchCameraAsync()
-
-            if (!result.canceled) {
-                let mediaLibraryPermissionsAsync = await MediaLibrary.requestPermissionsAsync()
-
-                if (mediaLibraryPermissionsAsync?.granted) await MediaLibrary.saveToLibraryAsync(result.assets[0].uri)
-
-                console.log('uploading and uploading the image occurs here');
-            } else Alert.alert(`Permissions haven't been granted`)
+            if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
+            else Alert.alert(`Permissions haven't been granted`)
         }
     }
 
     // this method requests permission to access the device’s location
     const getLocation = async () => {
-        const permissions = await Location.requestForegroundPermissionsAsync()
+        let permissions = await Location.requestForegroundPermissionsAsync()
 
         if (permissions?.granted) {
             const location = await Location.getCurrentPositionAsync({})
             if (location) {
                 onSend({
-                    longitude: location.coords.longitude,
-                    latitude: location.coords.latitude,
+                    location: {
+                        longitude: location.coords.longitude,
+                        latitude: location.coords.latitude,
+                    }
                 })
             } else Alert.alert("Error occurred while fetching location");
-        } else {
-            Alert.alert("Permissions haven't been granted.");
-        }
+        } else Alert.alert("Permissions haven't been granted.");
     }
 
     const onActionPress = () => {
@@ -106,7 +112,7 @@ const styles = StyleSheet.create({
         borderColor: '#b2b2b2',
         borderWidth: 2,
         flex: 1,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     iconText: {
         color: '#b2b2b2',
@@ -114,7 +120,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         backgroundColor: 'transparent',
         textAlign: 'center',
-        
+
     },
 })
 
