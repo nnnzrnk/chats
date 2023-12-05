@@ -6,7 +6,7 @@ and their location.
 
 
 
-| <img src="/assets/screenshotStart.jpg" width="200px"  style = "margin:20px, display: inline" alt="Screenshot of the Start page" /> | <img src="/assets/screenshotChat.jpg" width="200px" style="margin:20px display: inline" alt="Screenshot of the Chat page" />  |
+ <img src="/assets/screenshotStart.jpg" width="200px"  style = "margin:20px, display: inline" alt="Screenshot of the Start page" /> | <img src="/assets/screenshotChat.jpg" width="200px" style="margin:20px display: inline" alt="Screenshot of the Chat page" />  
 
 
 
