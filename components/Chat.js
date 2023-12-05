@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
 import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
 import { collection, query, addDoc, onSnapshot, orderBy } from "firebase/firestore";
@@ -6,10 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomActions from "./CustomActions";
 import MapView from "react-native-maps";
 
-const Chat = ({ route, navigation, db, isConnected }) => {
-  const { name } = route.params
-  const { background } = route.params;
-  const { userID } = route.params
+const Chat = ({ route, navigation, db, isConnected, storage }) => {
+  const { name, background, userID } = route.params
   const [messages, setMessages] = useState([])
 
   const onSend = (newMessages) => { addDoc(collection(db, "messages"), newMessages[0]) }
@@ -45,7 +43,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 
   //to hide input field when user offline
   const renderInputToolBar = (props) => {
-    if (isConnected) return <InputToolbar {...props} />
+    if (isConnected) return <InputToolbar {...props} containerStyle={styles.inputToolBar}/>
     else return null
   }
 
@@ -65,7 +63,8 @@ const Chat = ({ route, navigation, db, isConnected }) => {
         let newMessages = []
         documentsSnapshot.forEach(doc => {
           newMessages.push({
-            id: doc.id, ...doc.data(),
+            id: doc.id, 
+            ...doc.data(),
             createdAt: new Date(doc.data().createdAt.toMillis())
           })
         })
@@ -77,10 +76,10 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     return () => {
       if (unsubMessages) unsubMessages()
     }
-  }, [])
+  }, [isConnected])
 
   const renderCustomActions = (props) => {
-    return <CustomActions {...props} />
+    return <CustomActions userID={userID} storage={storage} {...props} />
   }
 
   const renderCustomView = (props) => {
@@ -89,8 +88,8 @@ const Chat = ({ route, navigation, db, isConnected }) => {
       return (
           <MapView
             style={{
-              width: 150,
-              height: 100,
+              width: 220,
+              height: 130,
               borderRadius: 13,
               margin: 3}}
             region={{
@@ -129,6 +128,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  inputToolBar: {
+    height: 50,
+    paddingLeft: 6,
+  }
 });
 
 export default Chat;
