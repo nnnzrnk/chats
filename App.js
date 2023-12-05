@@ -7,9 +7,11 @@ import { initializeApp } from "firebase/app";
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useEffect } from "react";
 import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 
 const Stack = createNativeStackNavigator();
+
 
 const App = () => {
   //state that represents the network connectivity status
@@ -29,10 +31,12 @@ const App = () => {
   const app = initializeApp(firebaseConfig);
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
+  // initialized the storage handler
+  const storage = getStorage(app);
 
-   //will display an alert popup if connection is lost
-   useEffect(() => {
-    if (connectionStatus.isConnected === false){
+  //will display an alert popup if connection is lost
+  useEffect(() => {
+    if (connectionStatus.isConnected === false) {
       Alert.alert("Connection lost!")
       disableNetwork(db)
     } else if (connectionStatus.isConnected === true) {
@@ -45,19 +49,15 @@ const App = () => {
       <Stack.Navigator initialRouteName="Start">
         <Stack.Screen name="Start" component={Start} />
         <Stack.Screen name="Chat" >
-          {props => <Chat isConnected={connectionStatus.isConnected} db={db} {...props} />}
+          {props => <Chat
+            isConnected={connectionStatus.isConnected}
+            db={db}
+            storage={storage}
+            {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  }
-});
 
 export default App;
