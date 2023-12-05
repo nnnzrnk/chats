@@ -3,8 +3,6 @@ import { useState } from "react"
 import { getAuth, signInAnonymously } from "firebase/auth";
 
 
-const image = { uri: 'https://i.pinimg.com/564x/e6/27/ac/e627ac9dbda722a8676142a86e78d425.jpg' }
-
 const Start = ({ navigation }) => {
     const [name, setName] = useState('')
     const [background, setBackground] = useState('')
@@ -25,7 +23,7 @@ const Start = ({ navigation }) => {
 
     return (
         // used imageBackground insted of View
-        <ImageBackground source={image} resizeMode="cover" style={styles.container}>
+        <ImageBackground source={require('../assets/background.jpg')} resizeMode="cover" style={styles.container}>
 
             {/*added extra View because its usefull to center title without margins */}
             <View style={styles.titleView}>
@@ -84,7 +82,7 @@ const styles = StyleSheet.create({
     appTitle: {
         fontSize: 45,
         fontWeight: '600',
-        color: '#ffffff',
+        color: '#757083',
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -127,13 +125,13 @@ const styles = StyleSheet.create({
 
     },
     selectColor1: {
-        backgroundColor: '#090C08',
+        backgroundColor: '#757083',
     },
     selectColor2: {
-        backgroundColor: '#474056',
+        backgroundColor: '#edc6bb',
     },
     selectColor3: {
-        backgroundColor: '#8A95A5',
+        backgroundColor: '#B5D4DB',
     },
     selectColor4: {
         backgroundColor: '#B9C6AE',
