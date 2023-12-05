@@ -4,8 +4,8 @@ provides users with a chat interface and the ability to share images and their
 and their location.
 
 
-|   |  |
-| ------------- | ------------- |
+
+
 | <img src="/assets/screenshotStart.jpg" width="200px"  style = "margin:20px, display: inline" alt="Screenshot of the Start page" /> | <img src="/assets/screenshotChat.jpg" width="200px" style="margin:20px display: inline" alt="Screenshot of the Chat page" />  |
 
 
