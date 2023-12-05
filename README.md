@@ -6,8 +6,8 @@ and their location.
 
 
 
-<img src="../chats/assets/screenshotStart.jpg" width="200px"  style = "margin:20px" alt="Screenshot of the Start page" />
-<img src="../chats/assets/screenshotChat.jpg" width="200px" style="margin:20px" alt="Screenshot of the Chat page" />
+<img src="/assets/screenshotStart.jpg" width="200px"  style = "margin:20px" alt="Screenshot of the Start page" />
+<img src="/assets/screenshotChat.jpg" width="200px" style="margin:20px" alt="Screenshot of the Chat page" />
 
 ---
 
