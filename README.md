@@ -3,6 +3,12 @@
 provides users with a chat interface and the ability to share images and their
 and their location.
 
+
+
+
+<img src="../chats/assets/screenshotStart.jpg" width="200px"  style = "margin:20px" alt="Screenshot of the Start page" />
+<img src="../chats/assets/screenshotChat.jpg" width="200px" style="margin:20px" alt="Screenshot of the Chat page" />
+
 ---
 
 ### Features
@@ -24,3 +30,14 @@ and location data.
 * Google Firebase authentication
 * Firebase Cloud Storage
 * Gifted Chat library
+
+---
+
+### How to get Chats
+
+* Downgrade Node to “16.19.0”, because Expo only supports Node 16 and lower versions
+* Сlone this project or download zip file
+* Open your terminal (go to the root of the file) or open the terminal of your code editor
+* Run "npm i" or "npm install" to install all the required dependencies
+* Download the Expo app to your phone and sign up. You can also use the Android Studio Emulator 
+* Run "expo start" and select one of the options 
