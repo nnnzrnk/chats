@@ -1,7 +1,6 @@
 # Chats
 #### Is a chat application for mobile devices created using React Native. The application
-provides users with a chat interface and the ability to share images and their
-and their location.
+provides users a chat interface and the ability to share images and their location.
 
 
 
