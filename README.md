@@ -43,4 +43,4 @@ and location data.
 * Open your terminal (go to the root of the file) or open the terminal of your code editor
 * Run "npm i" or "npm install" to install all the required dependencies
 * Download the Expo app to your phone and sign up. You can also use the Android Studio Emulator 
-* Run "expo start" and select one of the options 
+* Run "npx expo start" and select one of the options 
